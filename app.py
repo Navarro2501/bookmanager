@@ -3,7 +3,10 @@ from utils import database
 
 
 def show():
-    database.show_books()
+    books = database.show_books()
+    for book in books:
+        book_is_read = 'YES' if book['read'] else 'NO'
+        print(f"{book['name']} by {book['author']}, read: {book_is_read}")
 
 
 def add():
@@ -15,7 +18,7 @@ def add():
 def delete():
     name = input("\nEnter the book's name: ")
     author = input("Enter the author's name: ")
-    database.delete_book(name, author)
+    database.delete_book(name)
 
 
 def read():
@@ -34,16 +37,22 @@ Please select an option number and press Enter:
 5.-Exit
 Your choose: """
 
-option = 0
-while option != 5:
+
+def menu():
+    database.create_table()
     option = int(input(menu_description))
-    if option == 1:
-        show()
-    elif option == 2:
-        add()
-    elif option == 3:
-        delete()
-    elif option == 4:
-        read()
-    elif option < 1 or option > 5:
-        print(f"{option} is not a valid option. Please select a valid option.")
+    while option != 5:
+        if option == 1:
+            show()
+        elif option == 2:
+            add()
+        elif option == 3:
+            delete()
+        elif option == 4:
+            read()
+        elif option < 1 or option > 5:
+            print(f"{option} is not a valid option. Please select a valid option.")
+        option = int(input(menu_description))
+
+
+menu()

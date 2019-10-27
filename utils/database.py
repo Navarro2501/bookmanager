@@ -1,21 +1,36 @@
-#Concerned with the data management
+from .database_connection import DatabaseConnection
+# Concerned with the data management
 
-books = []
+
+def create_table():
+    with DatabaseConnection('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('CREATE TABLE IF NOT EXISTS books (name text primary key, author text, read integer)')
+
 
 def show_books():
-    for book in books:
-        print(f"{book['name']} by {book['author']}. Read: {book['read']}")
+    with DatabaseConnection('database.db') as connection:
+        cursor = connection.cursor()
+
+        cursor.execute('SELECT * FROM books')
+        books = [{'name': row[0], 'author': row[1], 'read': row[2]} for row in cursor.fetchall()]
+
+    return books
+
 
 def add_book(name, author):
-    book = {'name': name, 'author': author, 'read': False}
-    books.append(book)
+    with DatabaseConnection('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('INSERT INTO books VALUES (?, ?, 0)', (name, author))
 
-def delete_book(name, author):
-    global books
-    books = [book for book in books if book['name'] != name and book['author'] != author]
+
+def delete_book(name):
+    with DatabaseConnection('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('DELETE FROM books WHERE name=?', (name,))
+
 
 def read_book(name, author):
-    for book in books:
-        if book['name'] == name and book ['author'] == author:
-            book['read'] = True
-
+    with DatabaseConnection('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('UPDATE books SET read=1 WHERE name=?', (name,))
